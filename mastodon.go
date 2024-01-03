@@ -21,7 +21,6 @@ type post struct {
 
 func (m mastodon) post(p post) (string, error) {
 	post_url, err := url.JoinPath(m.baseUrl, "api/v1/statuses")
-	fmt.Println(post_url)
 	if err != nil {
 		return "", err
 	}
