@@ -41,7 +41,8 @@ func fmtMessage(date int) string {
 
 func main() {
 	key := os.Getenv("MASTODON_KEY")
-	masto := mastodon{"https://mastodon.mallegolhansen.com", key}
+	url := os.Getenv("MASTODON_URL")
+	masto := mastodon{url, key}
 
 	post := post{fmtMessage(marchDate()), "public", "eng"}
 
