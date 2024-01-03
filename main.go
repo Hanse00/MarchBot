@@ -10,25 +10,32 @@ import (
 	"strings"
 )
 
-func main() {
-	key := os.Getenv("MASTODON_KEY")
+type mastodon struct {
+	baseUrl string
+	apiKey  string
+}
+
+func (m mastodon) post() string {
+	post_url, err := url.JoinPath(m.baseUrl, "api/v1/statuses")
+	fmt.Println(post_url)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	form := url.Values{}
 	form.Add("status", "Hello World!")
 	form.Add("visibility", "public")
 	form.Add("language", "eng")
 
-	request, err := http.NewRequest("POST", "https://mastodon.mallegolhansen.com/api/v1/statuses", strings.NewReader(form.Encode()))
-
+	request, err := http.NewRequest("POST", post_url, strings.NewReader(form.Encode()))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", key))
+	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", m.apiKey))
 
 	response, err := http.DefaultClient.Do(request)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,6 +46,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	return string(body)
+}
 
-	fmt.Println(string(body))
+func main() {
+	key := os.Getenv("MASTODON_KEY")
+	masto := mastodon{"https://mastodon.mallegolhansen.com", key}
+
+	response := masto.post()
+	fmt.Println(response)
 }
